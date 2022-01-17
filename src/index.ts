@@ -5,7 +5,7 @@ import { createLambdaFunction } from './function'
 import { createDatabase } from './database'
 import { createAPI } from './api'
 
-type AppProps = {
+type HandlerProps = {
   lambda: {
     name: string
     entry: string
@@ -15,10 +15,34 @@ type AppProps = {
     resource: string
     method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   }
+}
+
+type AppProps = {
+  handler: HandlerProps | Array<HandlerProps>
   database: {
     name: string
     tableName: string
   }
+}
+
+const createHandler = (scope: Construct, props: HandlerProps) => {
+  const { lambda, api } = props
+
+  const lambdaFn = createLambdaFunction({
+    scope,
+    name: lambda.name,
+    entry: lambda.entry,
+  })
+
+  const apiGateway = createAPI({
+    scope,
+    lambdaFn,
+    name: api.name,
+    resource: api.resource,
+    method: api.method,
+  })
+
+  return { lambdaFn, apiGateway }
 }
 
 export default class AwsGoStack extends Stack {
@@ -30,14 +54,6 @@ export default class AwsGoStack extends Stack {
   ) {
     super(scope, id, stackProps)
 
-    const { lambda } = appProps
-
-    const lambdaFn = createLambdaFunction({
-      scope,
-      name: lambda.name,
-      entry: lambda.entry,
-    })
-
     const { database } = appProps
 
     const dynamoDB = createDatabase({
@@ -45,16 +61,16 @@ export default class AwsGoStack extends Stack {
       name: database.name,
       tableName: database.tableName,
     })
-    dynamoDB.grantReadWriteData(lambdaFn)
 
-    const { api } = appProps
+    if ('lambda' in appProps.handler) {
+      const handler = createHandler(scope, appProps.handler)
+      dynamoDB.grantReadWriteData(handler.lambdaFn)
+      return
+    }
 
-    createAPI({
-      scope,
-      lambdaFn,
-      name: api.name,
-      resource: api.resource,
-      method: api.method,
+    appProps.handler.forEach((props) => {
+      const handler = createHandler(scope, props)
+      dynamoDB.grantReadWriteData(handler.lambdaFn)
     })
   }
 }
