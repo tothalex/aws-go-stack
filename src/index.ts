@@ -21,7 +21,7 @@ type AppProps = {
   }
 }
 
-export default class GoLambdaStack extends Stack {
+export default class AwsGoStack extends Stack {
   constructor(
     scope: Construct,
     id: string,
