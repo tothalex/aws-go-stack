@@ -39,6 +39,14 @@ export const createLambdaFunction = (props: {
         image: Runtime.GO_1_X.bundlingImage,
         local: {
           tryBundle(outputDir: string) {
+            try {
+              exec('go version', {
+                stdio: ['ignore', process.stderr, 'inherit'],
+              })
+            } catch {
+              return false
+            }
+
             exec(
               `GOOS=linux CGO_ENABLED=0 go build -mod=vendor -o ${join(
                 outputDir,
