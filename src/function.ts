@@ -45,6 +45,12 @@ export const createLambdaFunction = (props: {
               return false
             }
 
+            // install dependencies
+            exec(`go mod vendor`, {
+              cwd: props.entry,
+            })
+
+            // build
             exec(
               `GOOS=linux CGO_ENABLED=0 go build -mod=vendor -o ${join(
                 outputDir,
