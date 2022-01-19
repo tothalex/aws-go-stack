@@ -48,7 +48,7 @@ export default class AwsGoStack extends Stack {
     const { api } = appProps
 
     const apiGateway = createAPI({
-      scope,
+      scope: this,
       name: api.name,
     })
 
