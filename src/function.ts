@@ -29,12 +29,10 @@ export const createLambdaFunction = (props: {
   name: string
   entry: string
 }) => {
-  const entry = join(__dirname, props.entry)
-
   return new Function(props.scope, props.name, {
     handler: 'main',
     runtime: Runtime.GO_1_X,
-    code: Code.fromAsset(entry, {
+    code: Code.fromAsset(props.entry, {
       bundling: {
         image: Runtime.GO_1_X.bundlingImage,
         local: {
@@ -53,7 +51,7 @@ export const createLambdaFunction = (props: {
                 'main',
               )}`,
               {
-                cwd: entry,
+                cwd: props.entry,
               },
             )
             return true
