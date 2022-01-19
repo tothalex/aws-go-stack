@@ -55,7 +55,7 @@ export default class AwsGoStack extends Stack {
     appProps.handlers.forEach((props) => {
       const { lambda, api } = props
       const lambdaFn = createLambdaFunction({
-        scope,
+        scope: this,
         name: lambda.name,
         entry: lambda.entry,
       })
