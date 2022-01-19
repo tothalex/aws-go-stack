@@ -1,5 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
+import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
 
 import { createLambdaFunction } from './function'
 import { createDatabase } from './database'
@@ -11,38 +12,20 @@ type HandlerProps = {
     entry: string
   }
   api: {
-    name: string
     resource: string
     method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   }
 }
 
 type AppProps = {
-  handler: HandlerProps | Array<HandlerProps>
+  handlers: Array<HandlerProps>
+  api: {
+    name: string
+  }
   database: {
     name: string
     tableName: string
   }
-}
-
-const createHandler = (scope: Construct, props: HandlerProps) => {
-  const { lambda, api } = props
-
-  const lambdaFn = createLambdaFunction({
-    scope,
-    name: lambda.name,
-    entry: lambda.entry,
-  })
-
-  const apiGateway = createAPI({
-    scope,
-    lambdaFn,
-    name: api.name,
-    resource: api.resource,
-    method: api.method,
-  })
-
-  return { lambdaFn, apiGateway }
 }
 
 export default class AwsGoStack extends Stack {
@@ -62,15 +45,31 @@ export default class AwsGoStack extends Stack {
       tableName: database.tableName,
     })
 
-    if ('lambda' in appProps.handler) {
-      const handler = createHandler(this, appProps.handler)
-      dynamoDB.grantReadWriteData(handler.lambdaFn)
-      return
-    }
+    const { api } = appProps
 
-    appProps.handler.forEach((props) => {
-      const handler = createHandler(this, props)
-      dynamoDB.grantReadWriteData(handler.lambdaFn)
+    const apiGateway = createAPI({
+      scope,
+      name: api.name,
+    })
+
+    appProps.handlers.forEach((props) => {
+      const { lambda, api } = props
+      const lambdaFn = createLambdaFunction({
+        scope,
+        name: lambda.name,
+        entry: lambda.entry,
+      })
+
+      let resource = apiGateway.root.getResource(api.resource)
+      if (!resource) {
+        resource = apiGateway.root.addResource(api.resource)
+      }
+
+      resource.addMethod(
+        api.method,
+        new LambdaIntegration(lambdaFn, { proxy: true }),
+      )
+      dynamoDB.grantReadWriteData(lambdaFn)
     })
   }
 }
