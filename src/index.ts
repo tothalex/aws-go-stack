@@ -57,19 +57,19 @@ export default class AwsGoStack extends Stack {
     const { database } = appProps
 
     const dynamoDB = createDatabase({
-      scope,
+      scope: this,
       name: database.name,
       tableName: database.tableName,
     })
 
     if ('lambda' in appProps.handler) {
-      const handler = createHandler(scope, appProps.handler)
+      const handler = createHandler(this, appProps.handler)
       dynamoDB.grantReadWriteData(handler.lambdaFn)
       return
     }
 
     appProps.handler.forEach((props) => {
-      const handler = createHandler(scope, props)
+      const handler = createHandler(this, props)
       dynamoDB.grantReadWriteData(handler.lambdaFn)
     })
   }
