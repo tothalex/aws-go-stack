@@ -2,6 +2,7 @@ import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { SpawnSyncOptions, spawnSync } from 'child_process'
 import { join } from 'path'
 import { Construct } from 'constructs'
+import { existsSync } from 'fs'
 
 const exec = (command: string, options?: SpawnSyncOptions) => {
   const proc = spawnSync('bash', ['-c', command], options)
@@ -22,6 +23,18 @@ const exec = (command: string, options?: SpawnSyncOptions) => {
   }
 
   return proc
+}
+
+export const getLambdaFunctionName = (entry: string) => {
+  if (!existsSync(entry)) {
+    throw new Error(`lambda entry doesn't exists: ${entry}❗️`)
+  }
+
+  if (entry.lastIndexOf('/') === -1) {
+    return entry
+  }
+
+  return entry.substring(entry.lastIndexOf('/') + 1)
 }
 
 export const createLambdaFunction = (props: {
