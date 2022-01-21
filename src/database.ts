@@ -12,6 +12,10 @@ export const createDatabase = (props: {
       name: 'pk',
       type: AttributeType.STRING,
     },
+    sortKey: {
+      name: 'sk',
+      type: AttributeType.STRING,
+    },
     tableName: props.tableName,
     removalPolicy: RemovalPolicy.DESTROY,
   })
