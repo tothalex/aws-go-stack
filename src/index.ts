@@ -1,6 +1,9 @@
 import { Stack, StackProps } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
-import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
+import {
+  AuthorizationType,
+  LambdaIntegration,
+} from 'aws-cdk-lib/aws-apigateway'
 import { existsSync } from 'fs'
 
 import { createLambdaFunction, getLambdaFunctionName } from './function'
@@ -22,6 +25,7 @@ type AppProps = {
   handlers: Array<HandlerProps>
   api: {
     name: string
+    authorizer?: boolean
   }
   database: {
     name: string
@@ -48,9 +52,10 @@ export default class AwsGoStack extends Stack {
 
     const { api } = appProps
 
-    const apiGateway = createAPI({
+    const { apiGateway, apiAuthorizer } = createAPI({
       scope: this,
       name: api.name,
+      authorizer: api.authorizer,
     })
 
     appProps.handlers.forEach((props) => {
@@ -76,6 +81,14 @@ export default class AwsGoStack extends Stack {
       resource.addMethod(
         api.method,
         new LambdaIntegration(lambdaFn, { proxy: true }),
+        apiAuthorizer
+          ? {
+              authorizationType: AuthorizationType.COGNITO,
+              authorizer: {
+                authorizerId: apiAuthorizer.ref,
+              },
+            }
+          : {},
       )
       dynamoDB.grantReadWriteData(lambdaFn)
     })

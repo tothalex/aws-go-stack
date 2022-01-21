@@ -1,8 +1,17 @@
-import { RestApi } from 'aws-cdk-lib/aws-apigateway'
+import {
+  AuthorizationType,
+  CfnAuthorizer,
+  RestApi,
+} from 'aws-cdk-lib/aws-apigateway'
+import { UserPool } from 'aws-cdk-lib/aws-cognito'
 import { Construct } from 'constructs'
 
-export const createAPI = (props: { scope: Construct; name: string }) => {
-  const api = new RestApi(props.scope, props.name, {
+export const createAPI = (props: {
+  scope: Construct
+  name: string
+  authorizer?: boolean
+}) => {
+  const apiGateway = new RestApi(props.scope, `${props.name}-api`, {
     deployOptions: {
       stageName: 'prod',
     },
@@ -19,5 +28,27 @@ export const createAPI = (props: { scope: Construct; name: string }) => {
     },
   })
 
-  return api
+  if (!props.authorizer) {
+    return { apiGateway }
+  }
+
+  const userPool = new UserPool(props.scope, 'users', {
+    signInAliases: {
+      email: true,
+    },
+  })
+
+  const apiAuthorizer = new CfnAuthorizer(
+    props.scope,
+    `${props.name}-authorizer`,
+    {
+      restApiId: apiGateway.restApiId,
+      name: `${props.name}Authorizer`,
+      type: AuthorizationType.COGNITO,
+      identitySource: 'method.request.header.Authorization',
+      providerArns: [userPool.userPoolArn],
+    },
+  )
+
+  return { apiGateway, apiAuthorizer }
 }
