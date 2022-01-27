@@ -38,6 +38,13 @@ export const createAPI = (props: {
     },
   })
 
+  userPool.addClient('users-client', {
+    authFlows: {
+      userPassword: true,
+      userSrp: true,
+    },
+  })
+
   const apiAuthorizer = new CfnAuthorizer(
     props.scope,
     `${props.name}-authorizer`,
