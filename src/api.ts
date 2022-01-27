@@ -38,7 +38,7 @@ export const createAPI = (props: {
     },
   })
 
-  userPool.addClient('users-client', {
+  userPool.addClient('client', {
     authFlows: {
       userPassword: true,
       userSrp: true,
