@@ -43,6 +43,7 @@ export const createAPI = (props: {
       userPassword: true,
       userSrp: true,
     },
+    generateSecret: true,
   })
 
   const apiAuthorizer = new CfnAuthorizer(
