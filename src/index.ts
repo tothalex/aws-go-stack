@@ -4,7 +4,6 @@ import {
   AuthorizationType,
   JsonSchemaType,
   LambdaIntegration,
-  MethodOptions,
   Model,
   RequestValidator,
 } from 'aws-cdk-lib/aws-apigateway'
@@ -62,16 +61,13 @@ export default class AwsGoStack extends Stack {
         resource = apiGateway.root.addResource(api.resource)
       }
 
-      const methodOptions: MethodOptions = {}
+      const methodOptions: Record<string, unknown> = {}
 
       if (apiAuthorizer) {
-        Object.assign(methodOptions.authorizer, {
+        methodOptions.authorizer = {
           authorizerId: apiAuthorizer.ref,
-        })
-        Object.assign(
-          methodOptions.authorizationType,
-          AuthorizationType.COGNITO,
-        )
+        }
+        methodOptions.authorizationType = AuthorizationType.COGNITO
       }
 
       if (api.schema) {
@@ -83,16 +79,15 @@ export default class AwsGoStack extends Stack {
             validateRequestBody: true,
           },
         )
-
         const model = new Model(this, `${api.resource}-model`, {
           restApi: apiGateway,
           schema: api.schema,
         })
 
-        Object.assign(methodOptions.requestValidator, requestValidator)
-        Object.assign(methodOptions.requestModels, {
+        methodOptions.requestValidator = requestValidator
+        methodOptions.requestModels = {
           'application/json': model,
-        })
+        }
       }
 
       resource.addMethod(
