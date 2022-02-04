@@ -2,7 +2,7 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { Construct } from 'constructs'
 import { RemovalPolicy } from 'aws-cdk-lib'
 
-const times = (n: number, f: (index?: number) => void) => {
+const times = (n: number, f: (index: number) => void) => {
   while (n-- > 0) f(n)
 }
 
@@ -27,13 +27,13 @@ export const createDatabase = (props: {
 
   times(props.secondaryIndex, (index) => {
     table.addGlobalSecondaryIndex({
-      indexName: `index-${index}`,
+      indexName: `index-${index + 1}`,
       partitionKey: {
-        name: `GSI${index}PK`,
+        name: `GSI${index + 1}PK`,
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: `GSI${index}SK`,
+        name: `GSI${index + 1}SK`,
         type: AttributeType.STRING,
       },
     })
