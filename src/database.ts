@@ -21,19 +21,5 @@ export const createDatabase = (props: {
     removalPolicy: RemovalPolicy.DESTROY,
   })
 
-  if (props.secondaryIndex) {
-    table.addGlobalSecondaryIndex({
-      indexName: 'gsi1',
-      partitionKey: {
-        name: 'gsi1pk',
-        type: AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'gsi1sk',
-        type: AttributeType.STRING,
-      },
-    })
-  }
-
   return table
 }
