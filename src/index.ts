@@ -31,6 +31,9 @@ export default class AwsGoStack extends Stack {
       scope: this,
       name: database.name,
       tableName: database.tableName,
+      secondaryIndex: database.secondaryIndex
+        ? parseInt(database.secondaryIndex)
+        : 0,
     })
 
     const { api } = appProps

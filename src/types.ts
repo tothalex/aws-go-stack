@@ -21,5 +21,6 @@ export type AppProps = {
   database: {
     name: string
     tableName: string
+    secondaryIndex?: '1' | '2' | '3'
   }
 }
