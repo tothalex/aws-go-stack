@@ -23,13 +23,13 @@ export const createDatabase = (props: {
 
   if (props.secondaryIndex) {
     table.addGlobalSecondaryIndex({
-      indexName: 'secondary-index',
+      indexName: 'gsi1',
       partitionKey: {
-        name: `GSI1PK`,
+        name: 'gsi1pk',
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: `GSI1SK`,
+        name: 'gsi1sk',
         type: AttributeType.STRING,
       },
     })
