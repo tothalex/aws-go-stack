@@ -93,14 +93,6 @@ export default class AwsGoStack extends Stack {
 
       resource.addMethod(api.method, createLambdaIntegration({ lambdaFn }), {
         ...methodOptions,
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Origin': true,
-            },
-          },
-        ],
       })
     })
   }
