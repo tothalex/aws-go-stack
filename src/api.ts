@@ -1,7 +1,6 @@
 import {
   AuthorizationType,
   CfnAuthorizer,
-  Cors,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway'
 import { UserPool } from 'aws-cdk-lib/aws-cognito'
@@ -17,7 +16,15 @@ export const createAPI = (props: {
       stageName: 'prod',
     },
     defaultCorsPreflightOptions: {
-      allowOrigins: Cors.ALL_ORIGINS,
+      allowHeaders: [
+        'Content-Type',
+        'X-Amz-Date',
+        'Authorization',
+        'X-Api-Key',
+      ],
+      allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      allowCredentials: true,
+      allowOrigins: ['http://localhost:3000'],
     },
   })
 

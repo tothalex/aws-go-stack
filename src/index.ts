@@ -92,17 +92,17 @@ export default class AwsGoStack extends Stack {
 
       resource.addMethod(api.method, createLambdaIntegration({ lambdaFn }), {
         ...methodOptions,
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Credentials': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-            },
-          },
+      })
+      resource.addCorsPreflight({
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
         ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: ['http://localhost:3000'],
       })
     })
   }
