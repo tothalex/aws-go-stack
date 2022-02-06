@@ -1,6 +1,7 @@
 import {
   AuthorizationType,
   CfnAuthorizer,
+  Cors,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway'
 import { UserPool } from 'aws-cdk-lib/aws-cognito'
@@ -14,6 +15,9 @@ export const createAPI = (props: {
   const apiGateway = new RestApi(props.scope, `${props.name}-api`, {
     deployOptions: {
       stageName: 'prod',
+    },
+    defaultCorsPreflightOptions: {
+      allowOrigins: Cors.ALL_ORIGINS,
     },
   })
 
