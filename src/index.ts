@@ -90,20 +90,11 @@ export default class AwsGoStack extends Stack {
         }
       }
 
+      console.log(resource.defaultCorsPreflightOptions)
       resource.addMethod(api.method, createLambdaIntegration({ lambdaFn }), {
         ...methodOptions,
       })
-      resource.addCorsPreflight({
-        allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
-        ],
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowCredentials: true,
-        allowOrigins: ['http://localhost:3000'],
-      })
+      console.log(resource.defaultCorsPreflightOptions)
     })
   }
 }
