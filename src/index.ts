@@ -11,7 +11,7 @@ import { existsSync } from 'fs'
 import { AppProps } from './types'
 import { createLambdaFunction, getLambdaFunctionName } from './function'
 import { createDatabase } from './database'
-import { createAPI } from './api'
+import { createAPI, addCorsOptions } from './api'
 import { createLambdaIntegration } from './integration'
 
 export { JsonSchemaType }
@@ -90,11 +90,10 @@ export default class AwsGoStack extends Stack {
         }
       }
 
-      console.log(resource.defaultCorsPreflightOptions)
       resource.addMethod(api.method, createLambdaIntegration({ lambdaFn }), {
         ...methodOptions,
       })
-      console.log(resource.defaultCorsPreflightOptions)
+      addCorsOptions(resource)
     })
   }
 }
