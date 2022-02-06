@@ -1,7 +1,6 @@
 import {
   AuthorizationType,
   CfnAuthorizer,
-  Cors,
   IResource,
   MockIntegration,
   PassthroughBehavior,
@@ -18,9 +17,6 @@ export const createAPI = (props: {
   const apiGateway = new RestApi(props.scope, `${props.name}-api`, {
     deployOptions: {
       stageName: 'prod',
-    },
-    defaultCorsPreflightOptions: {
-      allowOrigins: Cors.ALL_ORIGINS,
     },
   })
 
