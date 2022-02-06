@@ -9,10 +9,11 @@ import {
 } from 'aws-cdk-lib/aws-apigateway'
 import { existsSync } from 'fs'
 
+import { AppProps } from './types'
 import { createLambdaFunction, getLambdaFunctionName } from './function'
 import { createDatabase } from './database'
-import { createAPI, addCorsOptions } from './api'
-import { AppProps } from './types'
+import { createAPI } from './api'
+import { createLambdaIntegration } from './integration'
 
 export { JsonSchemaType }
 
@@ -90,13 +91,17 @@ export default class AwsGoStack extends Stack {
         }
       }
 
-      resource.addMethod(
-        api.method,
-        new LambdaIntegration(lambdaFn, { proxy: true }),
-        methodOptions,
-      )
-
-      addCorsOptions(resource)
+      resource.addMethod(api.method, createLambdaIntegration({ lambdaFn }), {
+        ...methodOptions,
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': true,
+            },
+          },
+        ],
+      })
     })
   }
 }
