@@ -2,9 +2,6 @@ import {
   AuthorizationType,
   CfnAuthorizer,
   Cors,
-  IResource,
-  MockIntegration,
-  PassthroughBehavior,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway'
 import { UserPool } from 'aws-cdk-lib/aws-cognito'
@@ -21,6 +18,9 @@ export const createAPI = (props: {
     },
     defaultCorsPreflightOptions: {
       allowOrigins: Cors.ALL_ORIGINS,
+      allowMethods: Cors.ALL_METHODS,
+      allowHeaders: ['*'],
+      allowCredentials: true,
     },
   })
 
